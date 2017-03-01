@@ -1,7 +1,8 @@
 <link rel="import" href="../../components/boe-list/boe-list.html">
-<link rel="import" href="../../components/iron-icons/iron-icons.html">
 <link rel="import" href="../../components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../components/iron-icons/iron-icons.html">
 <link rel="import" href="../../components/paper-button/paper-button.html">
+<link rel="import" href="../../components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../components/paper-input/paper-input.html">
 <link rel="import" href="../../components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../components/paper-tabs/paper-tabs.html">
@@ -35,6 +36,8 @@
 
 			#clear {
 				@apply(--layout-flex);
+				@apply(--layout-horizontal);
+				@apply(--layout-center-center);
 				margin-left: 8px;
 			}
 
@@ -70,30 +73,30 @@
 
 		<div id="leftColumn">
 			<h5>MANUAL ENTRY</h5>
-			<paper-tabs id="tabs" selected="{{selected}}">
-				<paper-tab>SUBSCRIPTION</paper-tab>
-				<paper-tab>TIP</paper-tab>
+			<paper-tabs id="tabs" selected="{{selectedType}}" attr-for-selected="name">
+				<paper-tab name="subscription">SUBSCRIPTION</paper-tab>
+				<paper-tab name="tip">TIP</paper-tab>
+				<paper-tab name="cheer">CHEER</paper-tab>
 			</paper-tabs>
 
 			<div style="display: flex;">
 				<paper-input id="name" label="Name" type="text" style="margin-right: 8px;"></paper-input>
-				<paper-input id="months" label="Months" type="number" hidden="[[selected]]" style="flex-shrink: 4;"
+				<paper-input id="months" label="Months" type="number" hidden="[[!isSubscription(selectedType)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
-				<paper-input id="amount" label="Amount" type="number" hidden="[[!selected]]" style="flex-shrink: 4;"
+				<paper-input id="amount" label="Amount" type="number" hidden="[[isSubscription(selectedType)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
 			</div>
 
 			<paper-button id="send" class="nodecg-info" raised on-tap="send">
-				<span hidden="[[selected]]">Send Subscription</span>
-				<span hidden="[[!selected]]">Send Tip</span>
+				<span>[[_calcSendButtonText(selectedType)]]</span>
 			</paper-button>
 
 			<div id="buttons">
-				<paper-button id="settings" class="nodecg-configure" nodecg-dialog="settings" raised>
+				<paper-button id="settings" class="nodecg-configure" on-tap="openSettingsDialog" raised>
 					&nbsp;Settings&nbsp;
 				</paper-button>
 
-				<paper-button id="clear" class="nodecg-configure" nodecg-dialog="clear-history" raised>
+				<paper-button id="clear" class="nodecg-configure" on-tap="openClearHistoryDialog" raised>
 					Clear History
 				</paper-button>
 			</div>
@@ -114,6 +117,37 @@
 				</template>
 			</boe-list>
 		</div>
+
+		<paper-dialog id="settingsDialog" with-backdrop>
+			<h2>Settings</h2>
+
+			<paper-input
+				id="minimumTipThreshold"
+				label="Minimum Tip Threshold"
+				type="number">
+			</paper-input>
+
+			<paper-input
+				id="minimumCheerThreshold"
+				label="Minimum Cheer Threshold"
+				type="number">
+			</paper-input>
+
+			<div class="buttons">
+				<paper-button dialog-dismiss>Cancel</paper-button>
+				<paper-button dialog-confirm autofocus on-tap="_settingsDialogAccepted">Accept</paper-button>
+			</div>
+		</paper-dialog>
+
+		<paper-dialog id="clearHistoryDialog" with-backdrop>
+			<h2>Clear History</h2>
+			<p>Are you sure you wish to clear the <b>subscriber</b>, <b>tip</b>, and <b>cheer</b> history?</p>
+			<p>This cannot be undone!</p>
+			<div class="buttons">
+				<paper-button dialog-dismiss>No, cancel</paper-button>
+				<paper-button dialog-confirm autofocus on-tap="_clearHistoryDialogAccepted">Yes, clear</paper-button>
+			</div>
+		</paper-dialog>
 	</template>
 
 	<script src="panel-body.js"></script>

@@ -3,14 +3,16 @@
 
 	const history = nodecg.Replicant('history');
 	const flaggedNotes = nodecg.Replicant('flaggedNotes');
+	const tipThreshold = nodecg.Replicant('tipThreshold');
+	const cheerThreshold = nodecg.Replicant('cheerThreshold');
 
 	Polymer({
 		is: 'panel-body',
 
 		properties: {
-			selected: {
-				type: Number,
-				value: 0
+			selectedType: {
+				type: String,
+				value: 'subscription'
 			}
 		},
 
@@ -26,7 +28,6 @@
 			});
 
 			history.on('change', newVal => {
-				console.log(newVal);
 				this._pruneList(this.$.recentList, history, true);
 
 				newVal.slice(0).reverse().forEach(note => {
@@ -36,6 +37,14 @@
 						this._addToListIfNotPresent(this.$.recentList, noteEl);
 					}
 				});
+			});
+
+			tipThreshold.on('change', newVal => {
+				this.$.minimumTipThreshold.value = newVal;
+			});
+
+			cheerThreshold.on('change', newVal => {
+				this.$.minimumCheerThreshold.value = newVal;
 			});
 		},
 
@@ -67,10 +76,10 @@
 		},
 
 		send() {
-			const name = document.getElementById('name').value;
-			const type = document.getElementById('tabs').selected === 0 ? 'subscription' : 'tip';
-			const months = document.getElementById('months').value;
-			const amount = document.getElementById('amount').value;
+			const name = this.$.name.value;
+			const type = this.selectedType;
+			const months = this.$.months.value;
+			const amount = this.$.amount.value;
 
 			const noteOpts = {
 				name,
@@ -85,7 +94,7 @@
 				} else {
 					noteOpts.resub = false;
 				}
-			} else if (type === 'tip') {
+			} else if (type === 'tip' || type === 'cheer') {
 				noteOpts.amount = parseFloat(amount);
 			} else {
 				console.error('[lfg-nucleus] Invalid manual note type:', type);
@@ -101,6 +110,38 @@
 
 		newestFirst(a, b) {
 			return b.timestamp - a.timestamp;
+		},
+
+		_calcSendButtonText(selectedType) {
+			switch (selectedType) {
+				case 'subscription':
+					return 'Send Subscription';
+				case 'tip':
+					return 'Send Tip';
+				case 'cheer':
+					return 'Send Cheer';
+			}
+		},
+
+		isSubscription(selectedType) {
+			return selectedType === 'subscription';
+		},
+
+		openSettingsDialog() {
+			this.$.settingsDialog.open();
+		},
+
+		openClearHistoryDialog() {
+			this.$.clearHistoryDialog.open();
+		},
+
+		_settingsDialogAccepted() {
+			tipThreshold.value = this.$.minimumTipThreshold.value;
+			cheerThreshold.value = this.$.minimumCheerThreshold.value;
+		},
+
+		_clearHistoryDialogAccepted() {
+			nodecg.sendMessage('clearHistory');
 		}
 	});
 })();

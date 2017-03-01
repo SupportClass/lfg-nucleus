@@ -12,20 +12,17 @@
 				@apply(--layout-center);
 			}
 
-			:host[type="tip"] #info {
-				background-color: #d9ead3;
-			}
-
-			:host[type="subscription"] #info {
-				background-color: #C9CDE0;
-			}
-
 			#info {
 				@apply(--layout-flex);
 				@apply(--shadow-elevation-2dp);
 				padding: 4px 6px;
 				margin: 4px;
 				min-width: 0; /* this is required, otherwise #info overflows */
+			}
+
+			#bitsIcon {
+				width: 14px;
+				height: 14px;
 			}
 
 			#label {
@@ -87,7 +84,10 @@
 
 		<div id="info">
 			<header>
-				<span id="label">[[_computeLabel(type)]]</span>
+				<span id="label">
+					<iron-icon id="bitsIcon" src="../../img/bits.svg"></iron-icon>
+					[[_computeLabel(type)]]
+				</span>
 
 				<template is="dom-if" if="[[profileUrl]]">
 					<a id="name" href="[[profileUrl]]" target="_blank">[[name]]</a>

@@ -71,6 +71,25 @@ module.exports = function (nodecg) {
 }
 ```
 
+### Cheer (bits)
+```js
+{
+    "name": "langeh",
+    "timestamp": 1456809533513,
+    "id": "8f2ea9cb-2e8f-45dd-8645-0b724b2774f6",
+    "read": false,
+    "type": "tip",
+    "amount": 5,
+    "currency": "$",
+    "formattedAmount": "$5",
+    "comment": "Hi streamer!",
+    "email": "email@alexvan.camp",
+    
+    // Will be "daily" or "monthly" if this tip is the top tip of the day or month.
+    "top": null
+}
+```
+
 ### Tip
 ```js
 {

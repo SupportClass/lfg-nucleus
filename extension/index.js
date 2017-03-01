@@ -3,6 +3,7 @@
 const server = require('../../../lib/server');
 const clone = require('clone');
 const Subscription = require('./classes/subscription');
+const Cheer = require('./classes/cheer');
 const Tip = require('./classes/tip');
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
@@ -15,6 +16,7 @@ let train;
 let history;
 let flagged;
 let tipThreshold;
+let cheerThreshold;
 
 module.exports = function (extensionApi) {
 	nodecg = extensionApi;
@@ -24,6 +26,7 @@ module.exports = function (extensionApi) {
 	}
 
 	tipThreshold = nodecg.Replicant('tipThreshold', {defaultValue: 1});
+	cheerThreshold = nodecg.Replicant('cheerThreshold', {defaultValue: 100});
 
 	history = require('./history')(nodecg, module.exports);
 	flagged = require('./flagged')(nodecg, module.exports);
@@ -43,6 +46,8 @@ module.exports = function (extensionApi) {
 	nodecg.listenFor('manualNote', noteOpts => {
 		if (noteOpts.type === 'subscription') {
 			emitNote(new Subscription(noteOpts));
+		} else if (noteOpts.type === 'cheer') {
+			emitNote(new Cheer(noteOpts));
 		} else if (noteOpts.type === 'tip') {
 			emitNote(new Tip(noteOpts));
 		} else {
@@ -121,6 +126,36 @@ function _emitSubscription(subscription, filter) {
 	}
 }
 
+function _emitCheer(cheer, filter) {
+	if (typeof filter === 'undefined') {
+		filter = true;
+	}
+
+	// filters email and filters words in the name
+	if (filter) {
+		if (wordfilter(cheer.name)) {
+			cheer.flagged = true;
+			cheer.flagReason = 'Username contains a blacklisted word.';
+		} else if (wordfilter(cheer.comment)) {
+			cheer.flagged = true;
+			cheer.flagReason = 'Comment contains a blacklisted word.';
+		} else if (cheer.amount < cheerThreshold.value) {
+			cheer.flagged = true;
+			cheer.flagReason = `Cheer amount is below display threshold (${cheerThreshold.value})`;
+		}
+
+		if (cheer.flagged) {
+			flagged.add(cheer);
+			return;
+		}
+	}
+
+	// Notify all bundles of the new cheer
+	nodecg.sendMessage('cheer', cheer);
+	emitter.emit('cheer', cheer);
+	history.add(cheer);
+}
+
 /**
  * Emits a note to extensions via the exported EventEmitter, and to clients via nodecg.sendMessage.
  * Also adds the note to the history. If the note's content is caught by the filter, it will not be emitted
@@ -136,6 +171,8 @@ function emitNote(note, filter) {
 
 	if (note.type === 'subscription') {
 		_emitSubscription(note, filter);
+	} else if (note.type === 'cheer') {
+		_emitCheer(note, filter);
 	} else if (note.type === 'tip') {
 		_emitTip(note, filter);
 	} else {
