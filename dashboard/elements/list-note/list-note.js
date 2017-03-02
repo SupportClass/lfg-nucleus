@@ -55,7 +55,7 @@
 		_updateBackgroundColor(note) {
 			if (note.type === 'subscription') {
 				this.$.info.style.backgroundColor = '#C9CDE0';
-			} else if (note.type == 'tip') {
+			} else if (note.type === 'tip') {
 				this.$.info.style.backgroundColor = '#d9ead3';
 			} else if (note.type === 'cheer') {
 				const cheerTier = calcCheerTier(note.amount);

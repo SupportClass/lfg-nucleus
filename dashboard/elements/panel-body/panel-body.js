@@ -120,6 +120,8 @@
 					return 'Send Tip';
 				case 'cheer':
 					return 'Send Cheer';
+				default:
+					return;
 			}
 		},
 
