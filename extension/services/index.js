@@ -2,7 +2,7 @@
 
 const semver = require('semver');
 const integrations = {
-	'lfg-siphon': '~0.4.0',
+	'lfg-siphon': '~0.5.0',
 	'lfg-streamtip': '^1.0.0',
 	'lfg-sublistener': '^3.0.0'
 };
