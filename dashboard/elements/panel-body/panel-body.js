@@ -80,6 +80,7 @@
 			const type = this.selectedType;
 			const months = this.$.months.value;
 			const amount = this.$.amount.value;
+			const comment = this.$.comment.value;
 
 			const noteOpts = {
 				name,
@@ -87,18 +88,27 @@
 				timestamp: Date.now()
 			};
 
-			if (type === 'subscription') {
-				if (months > 1) {
-					noteOpts.resub = true;
-					noteOpts.months = parseInt(months, 10);
-				} else {
-					noteOpts.resub = false;
-				}
-			} else if (type === 'tip' || type === 'cheer') {
-				noteOpts.amount = parseFloat(amount);
-			} else {
-				console.error('[lfg-nucleus] Invalid manual note type:', type);
-				return;
+			switch (type) {
+				case 'subscription':
+					noteOpts.message = comment;
+					if (months > 1) {
+						noteOpts.resub = true;
+						noteOpts.months = parseInt(months, 10);
+					} else {
+						noteOpts.resub = false;
+					}
+					break;
+				case 'cheer':
+					noteOpts.message = comment;
+					noteOpts.amount = parseFloat(amount);
+					break;
+				case 'tip':
+					noteOpts.comment = comment;
+					noteOpts.amount = parseFloat(amount);
+					break;
+				default:
+					console.error('[lfg-nucleus] Invalid manual note type:', type);
+					return;
 			}
 
 			nodecg.sendMessage('manualNote', noteOpts);
