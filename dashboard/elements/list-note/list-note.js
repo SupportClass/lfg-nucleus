@@ -30,11 +30,11 @@
 			this.profileUrl = note.profileUrl || false;
 			this.flagged = typeof note.flagged === 'undefined' ? false : note.flagged;
 			this.timestamp = note.timestamp;
+			this.comment = note.comment;
 
 			if (note.type === 'tip' || note.type === 'cheer') {
 				this.amount = note.amount;
 				this.formattedAmount = note.formattedAmount;
-				this.comment = note.comment;
 			} else if (note.type === 'subscription') {
 				this.resub = note.resub;
 				this.months = note.months;
