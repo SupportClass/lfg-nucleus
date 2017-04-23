@@ -102,28 +102,36 @@ function _emitSubscription(subscription, filter) {
 		delete subscription.train;
 	}
 
-	if (wordfilter(subscription.name) && filter) {
-		subscription.flagged = true;
-		subscription.flagReason = 'Username contains a blacklisted word.';
-		flagged.add(clone(subscription));
-	} else {
-		history.add(clone(subscription));
+	if (filter) {
+		if (wordfilter(subscription.name)) {
+			subscription.flagged = true;
+			subscription.flagReason = 'Username contains a blacklisted word.';
+		} else if (wordfilter(subscription.comment)) {
+			subscription.flagged = true;
+			subscription.flagReason = 'Comment contains a blacklisted word.';
+		}
 
-		// 2015-08-31 - Dumb bullshit I added to make lirik-stack work.
-		if (nodecg.bundleConfig && nodecg.bundleConfig.noResubsOnTrain && subscription.resub) {
-			nodecg.sendMessage('subscription', subscription);
-			emitter.emit('subscription', subscription);
+		if (subscription.flagged) {
+			flagged.add(subscription);
 			return;
 		}
+	}
+	history.add(clone(subscription));
 
-		// Increments the train by one THEN sends out the socket message with the sub train data.
-		if (train) {
-			subscription.train = train.addPassenger();
-		}
-
+	// 2015-08-31 - Dumb bullshit I added to make lirik-stack work.
+	if (nodecg.bundleConfig && nodecg.bundleConfig.noResubsOnTrain && subscription.resub) {
 		nodecg.sendMessage('subscription', subscription);
 		emitter.emit('subscription', subscription);
+		return;
 	}
+
+	// Increments the train by one THEN sends out the socket message with the sub train data.
+	if (train) {
+		subscription.train = train.addPassenger();
+	}
+
+	nodecg.sendMessage('subscription', subscription);
+	emitter.emit('subscription', subscription);
 }
 
 function _emitCheer(cheer, filter) {
