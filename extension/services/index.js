@@ -8,7 +8,7 @@ const integrations = {
 };
 
 module.exports = function (nodecg, nucleus) {
-	const bundles = require('../../../../lib/bundles');
+	const bundles = require('../../../../lib/bundle-manager');
 
 	Object.keys(integrations).forEach(bundleName => {
 		const bundle = bundles.find(bundleName);
