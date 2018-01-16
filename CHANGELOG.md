@@ -1,3 +1,19 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/supportclass/lfg-nucleus/compare/v3.0.0...v4.0.0) (2018-01-16)
+
+
+### Features
+
+* comments in manual notes, subscription comments (#2) ([7526b1b](https://github.com/supportclass/lfg-nucleus/commit/7526b1b))
+* port to NodeCG v0.9 ([42a2f6d](https://github.com/supportclass/lfg-nucleus/commit/42a2f6d))
+
+
+### BREAKING CHANGES
+
+* No longer supports versions of NodeCG earlier than v0.9.0.
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/supportclass/lfg-nucleus/compare/v2.0.1...v3.0.0) (2017-03-02)
 
