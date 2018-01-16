@@ -1,5 +1,7 @@
 'use strict';
 
+const clone = require('clone');
+
 const HISTORY_LEN = 60;
 
 module.exports = function (nodecg) {
@@ -36,6 +38,7 @@ module.exports = function (nodecg) {
 		history.value.unshift(note);
 		_trimExcess(history, HISTORY_LEN);
 
+		note = clone(note)
 		if (note.type === 'subscription') {
 			subscriptions.value.unshift(note);
 			_trimExcess(subscriptions, HISTORY_LEN / 2);
