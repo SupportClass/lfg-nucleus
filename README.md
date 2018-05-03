@@ -11,7 +11,7 @@ At this time, lfg-nucleus integrates with:
 - [lfg-sublistener](https://github.com/SupportClass/lfg-sublistener)@^3.0.0
 
 lfg-nucleus depends on:
- - [lfg-filter](https://github.com/SupportClass/lfg-filter)@^3.0.0
+ - [lfg-filter](https://github.com/SupportClass/lfg-filter)@^4.0.0
  
 ## Using in your bundle
 
