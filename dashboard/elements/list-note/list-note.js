@@ -35,7 +35,7 @@
 			if (note.type === 'tip' || note.type === 'cheer') {
 				this.amount = note.amount;
 				this.formattedAmount = note.formattedAmount;
-			} else if (note.type === 'subscription') {
+			} else if (note.type === 'subscription' || note.type === 'giftsub') {
 				this.resub = note.resub;
 				this.months = note.months;
 			}
