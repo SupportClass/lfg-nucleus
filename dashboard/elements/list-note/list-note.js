@@ -35,11 +35,11 @@
 			if (note.type === 'tip' || note.type === 'cheer') {
 				this.amount = note.amount;
 				this.formattedAmount = note.formattedAmount;
-			} else if (note.type === 'subscription' || note.type === 'giftsub') {
+			} else if (note.type === 'subscription' || note.type === 'subgift') {
 				this.resub = note.resub;
 				this.months = note.months;
 				this.plan = note.plan;
-				if (note.type === 'giftsub') {
+				if (note.type === 'subgift') {
 					this.recipient = note.recipient || false;
 					this.recipientUrl = note.recipientUrl || false;
 				}
@@ -78,7 +78,7 @@
 				return this.formattedAmount;
 			}
 
-			if (type === 'subscription' || type === 'giftsub') {
+			if (type === 'subscription' || type === 'subgift') {
 				let message = this.resub ? `x${this.months}` : 'NEW';
 				if (this.plan === 'Prime') {
 					message += ' (Prime)';
@@ -95,8 +95,8 @@
 			return type;
 		},
 
-		_isType(type) {
-			return this.type === type;
+		_isType(type, typeIntended) {
+			return type === typeIntended;
 		},
 
 		accept() {

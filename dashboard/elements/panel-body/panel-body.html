@@ -5,6 +5,9 @@
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../list-note/list-note.html">
@@ -124,16 +127,24 @@
 				<paper-tab name="tip">TIP</paper-tab>
 				<paper-tab name="cheer">CHEER</paper-tab>
 				<paper-tab name="hosted">HOST</paper-tab>
-				<paper-tab name="giftsub">GIFT</paper-tab>
+				<paper-tab name="subgift">GIFT</paper-tab>
 			</paper-tabs>
+
+			<paper-dropdown-menu label="Gift Type" style="display: block" hidden="[[!isType(selectedType, 'subgift')]]">
+				<paper-listbox id="giftType" class="dropdown-content" selected="{{selectedGiftTypeIdx}}">
+					<template is="dom-repeat" items="[[giftTypeLabels]]">
+						<paper-item>[[item]]</paper-item>
+					</template>
+				</paper-listbox>
+			</paper-dropdown-menu>
 
 			<div class="inputRow">
 				<paper-input id="name" label="Name" type="text" style="margin-right: 8px;"></paper-input>
 				<paper-input id="months" label="Months" type="number" hidden="[[!isSubscription(selectedType)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
-				<paper-input id="amount" label="Amount" type="number" hidden="[[!hasAmount(selectedType)]]" style="flex-shrink: 4;"
+				<paper-input id="amount" label="Amount" type="number" hidden="[[!hasAmount(selectedType, selectedGiftTypeIdx)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
-				<paper-input id="recipient" label="Recipient" type="text" hidden=[[!hasRecipient(selectedType)]]></paper-input>
+				<paper-input id="recipient" label="Recipient" type="text" hidden="[[!hasRecipient(selectedType, selectedGiftTypeIdx)]]"></paper-input>
 			</div>
 
 			<div class="inputRow" hidden="[[!hasComment(selectedType)]]">

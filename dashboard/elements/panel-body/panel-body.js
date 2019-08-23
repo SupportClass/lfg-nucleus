@@ -6,6 +6,9 @@
 	const tipThreshold = nodecg.Replicant('tipThreshold');
 	const cheerThreshold = nodecg.Replicant('cheerThreshold');
 
+	const giftTypes = ['subgift', 'submysterygift'];
+	const giftTypeLabels = ['Gift Subscription', 'Mystery Gifts'];
+
 	Polymer({
 		is: 'panel-body',
 
@@ -13,6 +16,14 @@
 			selectedType: {
 				type: String,
 				value: 'subscription'
+			},
+			selectedGiftTypeIdx: {
+				type: Number,
+				value: 0
+			},
+			giftTypeLabels: {
+				type: Array,
+				value: giftTypeLabels
 			}
 		},
 
@@ -83,6 +94,9 @@
 			const comment = this.$.comment.value;
 			const raid = this.$.raid.checked;
 			const prime = this.$.prime.checked;
+			const recipient = this.$.recipient.value;
+
+			const giftType = giftTypes[this.selectedGiftTypeIdx];
 
 			const noteOpts = {
 				name,
@@ -115,6 +129,15 @@
 					noteOpts.amount = parseInt(amount, 10);
 					noteOpts.raid = raid;
 					break;
+				case 'subgift':
+					noteOpts.type = giftType;
+					console.log(giftType);
+					if (giftType === 'subgift') {
+						noteOpts.recipient = recipient;
+					} else {
+						noteOpts.amount = amount;
+					}
+					break;
 				default:
 					console.error('[lfg-nucleus] Invalid manual note type:', type);
 					return;
@@ -141,7 +164,7 @@
 					return 'Send Cheer';
 				case 'hosted':
 					return 'Send Host';
-				case 'gift':
+				case 'subgift':
 					return 'Send Gift';
 				default:
 					return;
@@ -153,8 +176,13 @@
 		},
 
 		// Has an amount field in the current state
-		hasAmount(selectedType) {
+		hasAmount(selectedType, selectedGiftTypeIdx) {
 			if (['tip', 'cheer'].includes(selectedType)) {
+				return true;
+			}
+
+			const giftType = giftTypes[selectedGiftTypeIdx];
+			if (selectedType === 'subgift' && giftType === 'submysterygift') {
 				return true;
 			}
 
@@ -166,9 +194,10 @@
 			return ['subscription', 'tip', 'cheer'].includes(selectedType);
 		},
 
-		hasRecipient(selectedType) {
-			return false;
-		}
+		hasRecipient(selectedType, selectedGiftTypeIdx) {
+			const giftType = giftTypes[selectedGiftTypeIdx];
+			return (selectedType === 'subgift' && giftType === 'subgift');
+		},
 
 		isType(selectedType, typeToCheck) {
 			return selectedType === typeToCheck;
