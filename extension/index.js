@@ -5,6 +5,8 @@ const clone = require('clone');
 const Subscription = require('./classes/subscription');
 const Cheer = require('./classes/cheer');
 const Tip = require('./classes/tip');
+const {SubMysteryGift, SubGift} = require('./classes/subgift');
+const Host = require('./classes/host');
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
 
@@ -50,6 +52,12 @@ module.exports = function (extensionApi) {
 			emitNote(new Cheer(noteOpts));
 		} else if (noteOpts.type === 'tip') {
 			emitNote(new Tip(noteOpts));
+		} else if (noteOpts.type === 'hosted') {
+			emitNote(new Host(noteOpts));
+		} else if (noteOpts.type === 'subgift') {
+			emitNote(new SubGift(noteOpts));
+		} else if (noteOpts.type === 'submysterygift') {
+			emitNote(new SubMysteryGift(noteOpts));
 		} else {
 			nodecg.log.error(`Invalid type send to manualNote: ${noteOpts.type}`);
 		}
@@ -164,6 +172,28 @@ function _emitCheer(cheer, filter) {
 	history.add(cheer);
 }
 
+function _emitHost(host, filter) {
+	if (typeof filter === 'undefined') {
+		filter = true;
+	}
+
+	if (filter) {
+		if (wordfilter(host.name)) {
+			host.flagged = true;
+			host.flagReason = 'Username contains a blacklisted word.';
+		}
+
+		if (host.flagged) {
+			flagged.add(host);
+			return;
+		}
+	}
+
+	nodecg.sendMessage('hosted', host);
+	emitter.emit('hosted', host);
+	history.add(host);
+}
+
 /**
  * Emits a note to extensions via the exported EventEmitter, and to clients via nodecg.sendMessage.
  * Also adds the note to the history. If the note's content is caught by the filter, it will not be emitted
@@ -183,6 +213,8 @@ function emitNote(note, filter) {
 		_emitCheer(note, filter);
 	} else if (note.type === 'tip') {
 		_emitTip(note, filter);
+	} else if (note.type === 'hosted') {
+		_emitHost(note, filter);
 	} else {
 		nodecg.log.error('Unknown note type:', note.type);
 	}

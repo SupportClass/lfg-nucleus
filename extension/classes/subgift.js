@@ -10,6 +10,7 @@ class SubGift extends Note {
 		this.months = options.months || 0;
 		this.resub = Boolean(options.resub);
 		this.profileUrl = `https://twitch.tv/${options.name}`;
+		this.recipient = options.recipient;
 		this.recipientUrl = `https://twitch.tv/${options.recipient}`;
 	}
 }
@@ -20,6 +21,7 @@ class SubMysteryGift extends Note {
 		this.type = 'submysterygift';
 		this.channel = options.channel || '';
 		this.profileUrl = `https://twitch.tv/${options.name}`;
+		this.amount = options.amount;
 	}
 }
 

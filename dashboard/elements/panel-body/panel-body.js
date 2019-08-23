@@ -81,6 +81,8 @@
 			const months = this.$.months.value;
 			const amount = this.$.amount.value;
 			const comment = this.$.comment.value;
+			const raid = this.$.raid.checked;
+			const prime = this.$.prime.checked;
 
 			const noteOpts = {
 				name,
@@ -97,6 +99,9 @@
 					} else {
 						noteOpts.resub = false;
 					}
+					if (prime) {
+						noteOpts.plan = 'Prime';
+					}
 					break;
 				case 'cheer':
 					noteOpts.message = comment;
@@ -105,6 +110,10 @@
 				case 'tip':
 					noteOpts.comment = comment;
 					noteOpts.amount = parseFloat(amount);
+					break;
+				case 'hosted':
+					noteOpts.amount = parseInt(amount, 10);
+					noteOpts.raid = raid;
 					break;
 				default:
 					console.error('[lfg-nucleus] Invalid manual note type:', type);
@@ -130,6 +139,10 @@
 					return 'Send Tip';
 				case 'cheer':
 					return 'Send Cheer';
+				case 'hosted':
+					return 'Send Host';
+				case 'gift':
+					return 'Send Gift';
 				default:
 					return;
 			}
@@ -137,6 +150,28 @@
 
 		isSubscription(selectedType) {
 			return selectedType === 'subscription';
+		},
+
+		// Has an amount field in the current state
+		hasAmount(selectedType) {
+			if (['tip', 'cheer'].includes(selectedType)) {
+				return true;
+			}
+
+			return false;
+		},
+
+		// has a comment field in the current state
+		hasComment(selectedType) {
+			return ['subscription', 'tip', 'cheer'].includes(selectedType);
+		},
+
+		hasRecipient(selectedType) {
+			return false;
+		}
+
+		isType(selectedType, typeToCheck) {
+			return selectedType === typeToCheck;
 		},
 
 		openSettingsDialog() {

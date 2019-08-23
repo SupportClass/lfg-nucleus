@@ -38,6 +38,16 @@
 			} else if (note.type === 'subscription' || note.type === 'giftsub') {
 				this.resub = note.resub;
 				this.months = note.months;
+				this.plan = note.plan;
+				if (note.type === 'giftsub') {
+					this.recipient = note.recipient || false;
+					this.recipientUrl = note.recipientUrl || false;
+				}
+			} else if (note.type === 'submysterygift') {
+				this.amount = note.amount;
+			} else if (note.type === 'hosted') {
+				this.amount = note.amount;
+				this.raid = note.raid;
 			}
 
 			if (note.flagged) {
@@ -68,11 +78,25 @@
 				return this.formattedAmount;
 			}
 
-			if (type === 'subscription') {
-				return this.resub ? `x${this.months}` : 'NEW';
+			if (type === 'subscription' || type === 'giftsub') {
+				let message = this.resub ? `x${this.months}` : 'NEW';
+				if (this.plan === 'Prime') {
+					message += ' (Prime)';
+				}
+				return message;
+			}
+
+			if (type === 'hosted' && this.raid) {
+				return `raiding x${this.amount}`;
+			} else if (type === 'hosted') {
+				return `hosting x${this.amount}`;
 			}
 
 			return type;
+		},
+
+		_isType(type) {
+			return this.type === type;
 		},
 
 		accept() {

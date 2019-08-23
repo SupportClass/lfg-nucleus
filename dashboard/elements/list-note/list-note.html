@@ -101,6 +101,14 @@
 			<template is="dom-if" if="[[comment]]">
 				<div id="comment">[[comment]]</div>
 			</template>
+
+			<template is="dom-if" if="[[recipientUrl]]">
+				<div id="comment">gifted to <a href="[recipientUrl]">[[recipient]]</a></div>
+			</template>
+
+			<template is="dom-if" if="[[_isType('submysterygift')]]">
+				<div id="comment">gifted to [[amount]] users</div>
+			</template>
 		</div>
 
 		<div id="buttons">

@@ -14,6 +14,7 @@ module.exports = function (nodecg, nucleus) {
 			resub: data.resub,
 			months: data.months,
 			timestamp: data.ts,
+			plan: (data.method || {}).plan || null,
 			message: data.message
 		}));
 	});
@@ -52,7 +53,7 @@ module.exports = function (nodecg, nucleus) {
 		nucleus.emitNote(new Host({
 			channel: data.channel,
 			name: data.username,
-			viewers: data.viewers,
+			amount: data.viewers,
 			raid: data.raid,
 			timestamp: data.ts
 		}));
