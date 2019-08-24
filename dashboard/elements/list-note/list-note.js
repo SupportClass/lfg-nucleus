@@ -63,7 +63,7 @@
 		},
 
 		_updateBackgroundColor(note) {
-			if (note.type === 'subscription') {
+			if (['subscription', 'subgift', 'submysterygift'].includes(note.type)) {
 				this.$.info.style.backgroundColor = '#C9CDE0';
 			} else if (note.type === 'tip') {
 				this.$.info.style.backgroundColor = '#d9ead3';
