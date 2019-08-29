@@ -177,7 +177,7 @@
 
 		// Has an amount field in the current state
 		hasAmount(selectedType, selectedGiftTypeIdx) {
-			if (['tip', 'cheer'].includes(selectedType)) {
+			if (['tip', 'cheer', 'hosted'].includes(selectedType)) {
 				return true;
 			}
 
