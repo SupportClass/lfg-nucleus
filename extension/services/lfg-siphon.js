@@ -3,7 +3,7 @@
 const Subscription = require('../classes/subscription');
 const Cheer = require('../classes/cheer');
 const {SubMysteryGift, SubGift} = require('../classes/subgift');
-const Host = require('../classes/host');
+const Raid = require('../classes/raid');
 
 module.exports = function (nodecg, nucleus) {
 	const siphon = nodecg.extensions['lfg-siphon'];
@@ -49,12 +49,11 @@ module.exports = function (nodecg, nucleus) {
 		}));
 	});
 
-	siphon.on('hosted', data => {
-		nucleus.emitNote(new Host({
+	siphon.on('raided', data => {
+		nucleus.emitNote(new Raid({
 			channel: data.channel,
 			name: data.username,
 			amount: data.viewers,
-			raid: data.raid,
 			timestamp: data.ts
 		}));
 	});

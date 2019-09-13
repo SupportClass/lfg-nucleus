@@ -92,7 +92,6 @@
 			const months = this.$.months.value;
 			const amount = this.$.amount.value;
 			const comment = this.$.comment.value;
-			const raid = this.$.raid.checked;
 			const prime = this.$.prime.checked;
 			const recipient = this.$.recipient.value;
 
@@ -125,9 +124,8 @@
 					noteOpts.comment = comment;
 					noteOpts.amount = parseFloat(amount);
 					break;
-				case 'hosted':
+				case 'raided':
 					noteOpts.amount = parseInt(amount, 10);
-					noteOpts.raid = raid;
 					break;
 				case 'subgift':
 					noteOpts.type = giftType;
@@ -162,8 +160,8 @@
 					return 'Send Tip';
 				case 'cheer':
 					return 'Send Cheer';
-				case 'hosted':
-					return 'Send Host';
+				case 'raided':
+					return 'Send Raid';
 				case 'subgift':
 					return 'Send Gift';
 				default:
@@ -177,7 +175,7 @@
 
 		// Has an amount field in the current state
 		hasAmount(selectedType, selectedGiftTypeIdx) {
-			if (['tip', 'cheer', 'hosted'].includes(selectedType)) {
+			if (['tip', 'cheer', 'raided'].includes(selectedType)) {
 				return true;
 			}
 

@@ -6,7 +6,7 @@ const Subscription = require('./classes/subscription');
 const Cheer = require('./classes/cheer');
 const Tip = require('./classes/tip');
 const {SubMysteryGift, SubGift} = require('./classes/subgift');
-const Host = require('./classes/host');
+const Raid = require('./classes/raid');
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
 
@@ -52,8 +52,8 @@ module.exports = function (extensionApi) {
 			emitNote(new Cheer(noteOpts));
 		} else if (noteOpts.type === 'tip') {
 			emitNote(new Tip(noteOpts));
-		} else if (noteOpts.type === 'hosted') {
-			emitNote(new Host(noteOpts));
+		} else if (noteOpts.type === 'raided') {
+			emitNote(new Raid(noteOpts));
 		} else if (noteOpts.type === 'subgift') {
 			emitNote(new SubGift(noteOpts));
 		} else if (noteOpts.type === 'submysterygift') {
@@ -172,26 +172,26 @@ function _emitCheer(cheer, filter) {
 	history.add(cheer);
 }
 
-function _emitHost(host, filter) {
+function _emitRaid(raid, filter) {
 	if (typeof filter === 'undefined') {
 		filter = true;
 	}
 
 	if (filter) {
-		if (wordfilter(host.name)) {
-			host.flagged = true;
-			host.flagReason = 'Username contains a blacklisted word.';
+		if (wordfilter(raid.name)) {
+			raid.flagged = true;
+			raid.flagReason = 'Username contains a blacklisted word.';
 		}
 
-		if (host.flagged) {
-			flagged.add(host);
+		if (raid.flagged) {
+			flagged.add(raid);
 			return;
 		}
 	}
 
-	nodecg.sendMessage('hosted', host);
-	emitter.emit('hosted', host);
-	history.add(host);
+	nodecg.sendMessage('raided', raid);
+	emitter.emit('raided', raid);
+	history.add(raid);
 }
 
 function _emitSubGift(gift, filter) {
@@ -262,8 +262,8 @@ function emitNote(note, filter) {
 		_emitCheer(note, filter);
 	} else if (note.type === 'tip') {
 		_emitTip(note, filter);
-	} else if (note.type === 'hosted') {
-		_emitHost(note, filter);
+	} else if (note.type === 'raided') {
+		_emitRaid(note, filter);
 	} else if (note.type === 'subgift') {
 		_emitSubGift(note, filter);
 	} else if (note.type === 'submysterygift') {

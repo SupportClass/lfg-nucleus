@@ -45,9 +45,8 @@
 				}
 			} else if (note.type === 'submysterygift') {
 				this.amount = note.amount;
-			} else if (note.type === 'hosted') {
+			} else if (note.type === 'raided') {
 				this.amount = note.amount;
-				this.raid = note.raid;
 			}
 
 			if (note.flagged) {
@@ -86,10 +85,8 @@
 				return message;
 			}
 
-			if (type === 'hosted' && this.raid) {
+			if (type === 'raided') {
 				return `raiding x${this.amount}`;
-			} else if (type === 'hosted') {
-				return `hosting x${this.amount}`;
 			}
 
 			return type;

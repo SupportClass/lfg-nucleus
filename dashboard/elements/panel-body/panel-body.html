@@ -126,7 +126,7 @@
 				<paper-tab name="subscription">SUB</paper-tab>
 				<paper-tab name="tip">TIP</paper-tab>
 				<paper-tab name="cheer">CHEER</paper-tab>
-				<paper-tab name="hosted">HOST</paper-tab>
+				<paper-tab name="raided">RAID</paper-tab>
 				<paper-tab name="subgift">GIFT</paper-tab>
 			</paper-tabs>
 
@@ -151,7 +151,6 @@
 				<paper-input id="comment" label="Comment"  type="text"></paper-input>
 				<paper-checkbox id="prime" hidden="[[!isSubscription(selectedType)]]">Prime?</paper-checkbox>
 			</div>
-			<paper-checkbox id="raid" hidden="[[!isType(selectedType, 'hosted')]]">Is a raid</paper-checkbox>
 
 			<div id="buttons">
 				<paper-button id="send" class="nodecg-info" on-tap="send" raised>
