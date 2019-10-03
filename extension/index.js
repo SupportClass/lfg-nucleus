@@ -19,6 +19,7 @@ let history;
 let flagged;
 let tipThreshold;
 let cheerThreshold;
+let raidThreshold;
 
 module.exports = function (extensionApi) {
 	nodecg = extensionApi;
@@ -29,6 +30,7 @@ module.exports = function (extensionApi) {
 
 	tipThreshold = nodecg.Replicant('tipThreshold', {defaultValue: 1});
 	cheerThreshold = nodecg.Replicant('cheerThreshold', {defaultValue: 100});
+	raidThreshold = nodecg.Replicant('raidThreshold', {defaultValue: 5});
 
 	history = require('./history')(nodecg, module.exports);
 	flagged = require('./flagged')(nodecg, module.exports);
@@ -181,6 +183,9 @@ function _emitRaid(raid, filter) {
 		if (wordfilter(raid.name)) {
 			raid.flagged = true;
 			raid.flagReason = 'Username contains a blacklisted word.';
+		} else if (raid.amount < raidThreshold.value) {
+			raid.flagged = true;
+			raid.flagReason = `Raid count is below display threshold (${raidThreshold.value})`;
 		}
 
 		if (raid.flagged) {

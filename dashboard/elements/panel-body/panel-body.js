@@ -5,6 +5,7 @@
 	const flaggedNotes = nodecg.Replicant('flaggedNotes');
 	const tipThreshold = nodecg.Replicant('tipThreshold');
 	const cheerThreshold = nodecg.Replicant('cheerThreshold');
+	const raidThreshold = nodecg.Replicant('raidThreshold');
 
 	const giftTypes = ['subgift', 'submysterygift'];
 	const giftTypeLabels = ['Gift Subscription', 'Mystery Gifts'];
@@ -56,6 +57,10 @@
 
 			cheerThreshold.on('change', newVal => {
 				this.$.minimumCheerThreshold.value = newVal;
+			});
+
+			raidThreshold.on('change', newVal => {
+				this.$.minimumRaidThreshold.value = newVal;
 			});
 		},
 
@@ -212,6 +217,7 @@
 		_settingsDialogAccepted() {
 			tipThreshold.value = this.$.minimumTipThreshold.value;
 			cheerThreshold.value = this.$.minimumCheerThreshold.value;
+			raidThreshold.value = this.$.minimumRaidThreshold.value;
 		},
 
 		_clearHistoryDialogAccepted() {
