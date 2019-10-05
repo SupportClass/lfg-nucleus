@@ -9,6 +9,7 @@ module.exports = class Subscription extends Note {
 		this.channel = options.channel || '';
 		this.months = options.months || 0;
 		this.resub = Boolean(options.resub);
+		this.plan = options.plan;
 		this.profileUrl = `https://twitch.tv/${options.name}`;
 		this.comment = options.message ? options.message.trim() : '';
 	}

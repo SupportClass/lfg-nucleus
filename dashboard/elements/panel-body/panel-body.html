@@ -4,6 +4,10 @@
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../list-note/list-note.html">
@@ -18,11 +22,34 @@
 			#leftColumn,
 			#rightColumn {
 				width: calc(50% - 8px);
-				height: 500px
+				height: 500px;
 			}
 
 			#leftColumn {
 				margin-right: 8px;
+			}
+
+			.inputRow {
+				display: flex;
+				flex-direction: row;
+				align-items: flex-end;
+			}
+
+			.inputRow > * {
+				margin-right: 8px;
+			}
+
+			.inputRow > *:last-child {
+				margin-right: 0;
+			}
+
+			#prime {
+				/* note: If there's an alternative way to line up with paper-input, do that instead. */
+				margin-bottom: 13px;
+			}
+
+			#comment {
+				flex: 1;
 			}
 
 			#flaggedList {
@@ -31,20 +58,24 @@
 
 			#buttons {
 				@apply(--layout-horizontal);
+				margin-top: 12px;
 				margin-bottom: 12px;
-			}
-
-			#clear {
-				@apply(--layout-flex);
-				@apply(--layout-horizontal);
-				@apply(--layout-center-center);
-				margin-left: 8px;
 			}
 
 			#send {
 				@apply(--layout-horizontal);
 				@apply(--layout-center-center);
-				margin-bottom: 8px;
+				flex: 1;
+			}
+
+			#settings {
+				@apply(--layout-flex);
+				@apply(--layout-horizontal);
+				@apply(--layout-center-center);
+				margin-left: 8px;
+				min-width: 0;
+				flex: 0;
+				flex-basis: auto;
 			}
 
 			#rightColumn {
@@ -53,7 +84,25 @@
 				float: right;
 			}
 
+			#rightColumnHeader {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: flex-end;
+			}
+
+			#rightColumnHeader .clearButton {
+				margin-right: 40px;
+				text-decoration: underline;
+				font-size: 0.9em;
+			}
+
+			#rightColumnHeader .clearButton:hover {
+				cursor:pointer;
+			}
+
 			#recentList {
+				margin-top: 4px;
 				margin-left: -4px;
 				--boe-list-list-styles: {
 					@apply(--layout-vertical-reverse);
@@ -74,31 +123,42 @@
 		<div id="leftColumn">
 			<h5>MANUAL ENTRY</h5>
 			<paper-tabs id="tabs" selected="{{selectedType}}" attr-for-selected="name">
-				<paper-tab name="subscription">SUBSCRIPTION</paper-tab>
+				<paper-tab name="subscription">SUB</paper-tab>
 				<paper-tab name="tip">TIP</paper-tab>
 				<paper-tab name="cheer">CHEER</paper-tab>
+				<paper-tab name="raided">RAID</paper-tab>
+				<paper-tab name="subgift">GIFT</paper-tab>
 			</paper-tabs>
 
-			<div style="display: flex;">
+			<paper-dropdown-menu label="Gift Type" style="display: block" hidden="[[!isType(selectedType, 'subgift')]]">
+				<paper-listbox id="giftType" class="dropdown-content" selected="{{selectedGiftTypeIdx}}">
+					<template is="dom-repeat" items="[[giftTypeLabels]]">
+						<paper-item>[[item]]</paper-item>
+					</template>
+				</paper-listbox>
+			</paper-dropdown-menu>
+
+			<div class="inputRow">
 				<paper-input id="name" label="Name" type="text" style="margin-right: 8px;"></paper-input>
 				<paper-input id="months" label="Months" type="number" hidden="[[!isSubscription(selectedType)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
-				<paper-input id="amount" label="Amount" type="number" hidden="[[isSubscription(selectedType)]]" style="flex-shrink: 4;"
+				<paper-input id="amount" label="Amount" type="number" hidden="[[!hasAmount(selectedType, selectedGiftTypeIdx)]]" style="flex-shrink: 4;"
 							 min="0"></paper-input>
+				<paper-input id="recipient" label="Recipient" type="text" hidden="[[!hasRecipient(selectedType, selectedGiftTypeIdx)]]"></paper-input>
 			</div>
-			<paper-input id="comment" label="Comment" type="text"></paper-input>
 
-			<paper-button id="send" class="nodecg-info" raised on-tap="send">
-				<span>[[_calcSendButtonText(selectedType)]]</span>
-			</paper-button>
+			<div class="inputRow" hidden="[[!hasComment(selectedType)]]">
+				<paper-input id="comment" label="Comment"  type="text"></paper-input>
+				<paper-checkbox id="prime" hidden="[[!isSubscription(selectedType)]]">Prime?</paper-checkbox>
+			</div>
 
 			<div id="buttons">
-				<paper-button id="settings" class="nodecg-configure" on-tap="openSettingsDialog" raised>
-					&nbsp;Settings&nbsp;
+				<paper-button id="send" class="nodecg-info" on-tap="send" raised>
+					<span>[[_calcSendButtonText(selectedType)]]</span>
 				</paper-button>
 
-				<paper-button id="clear" class="nodecg-configure" on-tap="openClearHistoryDialog" raised>
-					Clear History
+				<paper-button id="settings" class="nodecg-configure" on-tap="openSettingsDialog" raised>
+					<iron-icon icon="settings"></iron-icon>
 				</paper-button>
 			</div>
 
@@ -111,7 +171,10 @@
 		</div>
 
 		<div id="rightColumn">
-			<h5>RECENT NOTES</h5>
+			<div id="rightColumnHeader">
+				<h5>RECENT NOTES</h5>
+				<a class="clearButton" on-tap="openClearHistoryDialog">CLEAR</a>
+			</div>
 			<boe-list id="recentList" empty-msg="There are no recent notes.">
 				<template id="lol" is="dom-repeat" items="[[history]]" filter="isUnread" sort="newestFirst" as="note">
 					<list-note note="[[note]]"></list-note>
@@ -131,6 +194,12 @@
 			<paper-input
 				id="minimumCheerThreshold"
 				label="Minimum Cheer Threshold"
+				type="number">
+			</paper-input>
+
+			<paper-input
+				id="minimumRaidThreshold"
+				label="Minimum Raid Threshold"
 				type="number">
 			</paper-input>
 

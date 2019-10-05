@@ -5,6 +5,8 @@ const clone = require('clone');
 const Subscription = require('./classes/subscription');
 const Cheer = require('./classes/cheer');
 const Tip = require('./classes/tip');
+const {SubMysteryGift, SubGift} = require('./classes/subgift');
+const Raid = require('./classes/raid');
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
 
@@ -17,6 +19,7 @@ let history;
 let flagged;
 let tipThreshold;
 let cheerThreshold;
+let raidThreshold;
 
 module.exports = function (extensionApi) {
 	nodecg = extensionApi;
@@ -27,6 +30,7 @@ module.exports = function (extensionApi) {
 
 	tipThreshold = nodecg.Replicant('tipThreshold', {defaultValue: 1});
 	cheerThreshold = nodecg.Replicant('cheerThreshold', {defaultValue: 100});
+	raidThreshold = nodecg.Replicant('raidThreshold', {defaultValue: 5});
 
 	history = require('./history')(nodecg, module.exports);
 	flagged = require('./flagged')(nodecg, module.exports);
@@ -50,6 +54,12 @@ module.exports = function (extensionApi) {
 			emitNote(new Cheer(noteOpts));
 		} else if (noteOpts.type === 'tip') {
 			emitNote(new Tip(noteOpts));
+		} else if (noteOpts.type === 'raided') {
+			emitNote(new Raid(noteOpts));
+		} else if (noteOpts.type === 'subgift') {
+			emitNote(new SubGift(noteOpts));
+		} else if (noteOpts.type === 'submysterygift') {
+			emitNote(new SubMysteryGift(noteOpts));
 		} else {
 			nodecg.log.error(`Invalid type send to manualNote: ${noteOpts.type}`);
 		}
@@ -164,6 +174,80 @@ function _emitCheer(cheer, filter) {
 	history.add(cheer);
 }
 
+function _emitRaid(raid, filter) {
+	if (typeof filter === 'undefined') {
+		filter = true;
+	}
+
+	if (filter) {
+		if (wordfilter(raid.name)) {
+			raid.flagged = true;
+			raid.flagReason = 'Username contains a blacklisted word.';
+		} else if (raid.amount < raidThreshold.value) {
+			raid.flagged = true;
+			raid.flagReason = `Raid count is below display threshold (${raidThreshold.value})`;
+		}
+
+		if (raid.flagged) {
+			flagged.add(raid);
+			return;
+		}
+	}
+
+	nodecg.sendMessage('raided', raid);
+	emitter.emit('raided', raid);
+	history.add(raid);
+}
+
+function _emitSubGift(gift, filter) {
+	if (typeof filter === 'undefined') {
+		filter = true;
+	}
+
+	if (filter) {
+		if (wordfilter(gift.name)) {
+			gift.flagged = true;
+			gift.flagReason = 'Username contains a blacklisted word.';
+		}
+
+		if (wordfilter(gift.recipient)) {
+			gift.flagged = true;
+			gift.flagReason = 'Recipient contains a blacklisted word.';
+		}
+
+		if (gift.flagged) {
+			flagged.add(gift);
+			return;
+		}
+	}
+
+	nodecg.sendMessage('subgift', gift);
+	emitter.emit('subgift', gift);
+	history.add(gift);
+}
+
+function _emitSubMysteryGift(gift, filter) {
+	if (typeof filter === 'undefined') {
+		filter = true;
+	}
+
+	if (filter) {
+		if (wordfilter(gift.name)) {
+			gift.flagged = true;
+			gift.flagReason = 'Username contains a blacklisted word.';
+		}
+
+		if (gift.flagged) {
+			flagged.add(gift);
+			return;
+		}
+	}
+
+	nodecg.sendMessage('submysterygift', gift);
+	emitter.emit('submysterygift', gift);
+	history.add(gift);
+}
+
 /**
  * Emits a note to extensions via the exported EventEmitter, and to clients via nodecg.sendMessage.
  * Also adds the note to the history. If the note's content is caught by the filter, it will not be emitted
@@ -183,6 +267,12 @@ function emitNote(note, filter) {
 		_emitCheer(note, filter);
 	} else if (note.type === 'tip') {
 		_emitTip(note, filter);
+	} else if (note.type === 'raided') {
+		_emitRaid(note, filter);
+	} else if (note.type === 'subgift') {
+		_emitSubGift(note, filter);
+	} else if (note.type === 'submysterygift') {
+		_emitSubMysteryGift(note, filter);
 	} else {
 		nodecg.log.error('Unknown note type:', note.type);
 	}
