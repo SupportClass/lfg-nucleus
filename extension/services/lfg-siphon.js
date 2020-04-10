@@ -42,6 +42,7 @@ module.exports = function (nodecg, nucleus) {
 		nucleus.emitNote(new SubGift({
 			channel: data.channel,
 			name: data.username,
+			recipient: data.recipient,
 			resub: data.resub,
 			months: data.months,
 			message: data.message,
